@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>シフト給与管理｜木屋町御池 & 烏丸三条</title>
+<link href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@400;500;700;900&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ink:#0F1612;--ink2:#3D4A42;--ink3:#7A8C81;
+  --paper:#F5F3EE;--paper2:#EAE8E2;--surface:#FFFFFF;
+  --green:#1A7A56;--green2:#0F5038;--green-pale:#D4EDDF;
+  --amber:#C87A1A;--amber-pale:#FBF0DC;
+  --purple:#5B4B8A;--purple-pale:#EDE8F8;
+  --red:#A02828;--red-pale:#F8E8E8;
+  --blue:#1A5CA0;--blue-pale:#E0ECFB;
+  --border:rgba(15,22,18,0.10);--border2:rgba(15,22,18,0.06);
+  --shadow:0 12px 32px -4px rgba(15,22,18,0.04), 0 4px 12px -2px rgba(15,22,18,0.02);
+  --radius:16px;--radius-sm:10px;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{font-family:'Zen Kaku Gothic New',sans-serif;background:var(--paper);color:var(--ink);min-height:100vh;padding-bottom:120px;line-height:1.5}
+.header{background:var(--surface);border-bottom:1px solid var(--border);padding:1.25rem 1rem;position:sticky;top:0;z-index:100}
+.header-inner{max-width:1000px;margin:0 auto;display:flex;justify-content:between;align-items:center}
+.logo{font-weight:900;font-size:18px;letter-spacing:-0.5px;color:var(--green);display:flex;align-items:center;gap:6px}
+.logo span{font-size:11px;background:var(--green-pale);color:var(--green);padding:2px 8px;border-radius:20px;font-weight:700}
+.nav-tabs{display:flex;background:var(--paper2);padding:4px;border-radius:12px;gap:2px}
+.tab-btn{background:none;border:none;padding:8px 16px;font-size:13px;font-weight:700;color:var(--ink3);border-radius:8px;cursor:pointer;transition:all 0.2s}
+.tab-btn.active{background:var(--surface);color:var(--ink);box-shadow:0 2px 6px rgba(0,0,0,0.04)}
+.container{max-width:1000px;margin:1.5rem auto;padding:0 1rem}
+.tab-content{display:none}.tab-content.active{display:block}
+.grid{display:grid;grid-template-columns:1fr;gap:1.5rem}
+@media(min-width:768px){.grid{grid-template-columns:1fr 1fr}}
+.card{background:var(--surface);border-radius:var(--radius);padding:1.5rem;box-shadow:var(--shadow);border:1px solid var(--border2);position:relative;overflow:hidden}
+.card-title{font-size:15px;font-weight:700;margin-bottom:1.25rem;color:var(--ink2);display:flex;align-items:center;justify-content:between}
+.form-group{margin-bottom:1.25rem}.form-group:last-child{margin-bottom:0}
+label{display:block;font-size:12px;font-weight:700;color:var(--ink3);margin-bottom:6px}
+.input,select,textarea{width:100%;background:var(--paper);border:1px solid transparent;border-radius:var(--radius-sm);padding:12px;font-size:15px;font-family:inherit;color:var(--ink);outline:none;transition:all 0.2s}
+.input:focus,select:focus,textarea:focus{background:var(--surface);border-color:var(--green)}
+.btn-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.btn{border:none;border-radius:var(--radius-sm);padding:14px;font-size:15px;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:6px;transition:all 0.2s;text-decoration:none;width:100%}
+.btn-green{background:var(--green);color:var(--surface)}.btn-green:hover{background:var(--green2)}
+.btn-amber{background:var(--amber);color:var(--surface)}
+.btn-red{background:var(--red);color:var(--surface)}
+.btn-ghost{background:var(--paper2);color:var(--ink2)}
+.btn-ghost:hover{background:var(--border)}
+.store-tag{font-size:11px;font-weight:700;padding:2px 6px;border-radius:4px}
+.store-k{background:var(--purple-pale);color:var(--purple)}
+.store-r{background:var(--amber-pale);color:var(--amber)}
+.record-item{display:flex;align-items:center;justify-content:between;padding:12px 0;border-bottom:1px solid var(--border2)}
+.record-item:last-child{border-bottom:none}
+.time-mono{font-family:'DM Mono',monospace;font-weight:500;font-size:14px}
+.badge-in{background:var(--green-pale);color:var(--green);padding:2px 6px;border-radius:4px;font-size:11px;font-weight:700}
+.badge-out{background:var(--red-pale);color:var(--red);padding:2px 6px;border-radius:4px;font-size:11px;font-weight:700}
+.summary-box{background:var(--paper);border-radius:var(--radius-sm);padding:1rem;margin-bottom:1rem;display:flex;justify-content:between;align-items:center}
+.role-badge{position:fixed;bottom:20px;right:20px;z-index:200;background:var(--ink);color:var(--surface);padding:10px 18px;border-radius:30px;font-size:12px;font-weight:700;box-shadow:0 8px 24px rgba(0,0,0,0.15);cursor:pointer;display:flex;align-items:center;gap:6px}
+.modal{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(15,22,18,0.4);backdrop-filter:blur(4px);z-index:300;display:none;align-items:center;justify-content:center;padding:1rem}
+.modal-content{background:var(--surface);border-radius:var(--radius);padding:1.5rem;max-width:460px;width:100%;box-shadow:var(--shadow)}
+.admin-only{display:none !important}.is-admin .admin-only{display:flex !important}div.admin-only.card, div.admin-only.summary-box{display:block !important}
+/* ローディング表示用 */
+.loading-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(245,243,238,0.8); z-index: 999; display: flex; flex-direction: column; align-items: center; justify-content: center; font-weight: 700; color: var(--green); }
+.spinner { width: 40px; height: 40px; border: 4px solid var(--paper2); border-top-color: var(--green); border-radius: 50%; animation: spin 0.8s linear infinite; margin-bottom: 12px; }
+@keyframes spin { to { transform: rotate(360deg); } }
+</style>
+</head>
+<body>
+
+<div class="loading-overlay" id="loading">
+  <div class="spinner"></div>
+  <div>Googleスプレッドシートから同期中...</div>
+</div>
+
+<header class="header">
+  <div class="header-inner">
+    <div class="logo">勤怠・給与管理 <span>Cloud</span></div>
+    <div class="nav-tabs">
+      <button class="tab-btn active" onclick="switchTab('timecard')">⏰ 打刻</button>
+      <button class="tab-btn" onclick="switchTab('dashboard')">📊 集計・履歴</button>
+      <button class="tab-btn admin-only" onclick="switchTab('settings')">⚙️ 設定</button>
+    </div>
+  </div>
+</header>
+
+<div class="container">
+  <div id="tab-timecard" class="tab-content active">
+    <div class="grid">
+      <div class="card">
+        <div class="card-title">リアルタイム打刻</div>
+        <div class="form-group">
+          <label>店舗を選択</label>
+          <select id="ci-store" onchange="filterStaffByStore()">
+            <option value="木屋町御池個室店">木屋町御池個室店</option>
+            <option value="烏丸三条個室店">烏丸三条個室店</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>スタッフ名</label>
+          <select id="ci-staff"></select>
+        </div>
+        <div class="form-group">
+          <label>備考（遅刻・早退理由など）</label>
+          <input type="text" id="ci-note" class="input" placeholder="特になし">
+        </div>
+        <div class="form-group" style="margin-top:1.5rem">
+          <div class="btn-grid">
+            <button class="btn btn-green" onclick="registerRecord('出勤')">☀️ 出勤</button>
+            <button class="btn btn-red" onclick="registerRecord('退勤')">🌙 退勤</button>
+          </div>
+        </div>
+      </div>
+      
+      <div class="card">
+        <div class="card-title">本日の打刻ログ</div>
+        <div id="today-logs" style="max-height:280px;overflow-y:auto"></div>
+      </div>
+    </div>
+  </div>
+
+  <div id="tab-dashboard" class="tab-content">
+    <div class="admin-only summary-box" id="admin-summary-header">
+      <div>
+        <div style="font-size:12px;color:var(--ink3);font-weight:700">選択期間の総支給予測金額</div>
+        <div id="total-pay-display" style="font-size:24px;font-weight:900;color:var(--green)">¥0</div>
+      </div>
+    </div>
+    
+    <div class="card" style="margin-bottom:1.5rem">
+      <div class="card-title">表示フィルター</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px">
+        <div>
+          <label>対象月</label>
+          <select id="filter-month" onchange="renderDashboard()"></select>
+        </div>
+        <div>
+          <label>店舗</label>
+          <select id="filter-store" onchange="renderDashboard()">
+            <option value="ALL">両店舗すべて</option>
+            <option value="木屋町御池個室店">木屋町御池</option>
+            <option value="烏丸三条個室店">烏丸三条</option>
+          </select>
+        </div>
+      </div>
+      <div class="admin-only" style="width:100%">
+        <select id="filter-staff" onchange="renderDashboard()" class="input" style="padding:10px"></select>
+      </div>
+    </div>
+
+    <div class="grid">
+      <div class="card admin-only">
+        <div class="card-title">人件費・勤務時間集計</div>
+        <div id="salary-summary-list" style="max-height:400px;overflow-y:auto"></div>
+      </div>
+      <div class="card" id="history-card-wrapper">
+        <div class="card-title">出退勤履歴明細</div>
+        <div id="history-log-list" style="max-height:400px;overflow-y:auto"></div>
+      </div>
+    </div>
+  </div>
+
+  <div id="tab-settings" class="tab-content admin-only">
+    <div class="grid">
+      <div class="card">
+        <div class="card-title">スタッフ新規登録</div>
+        <div class="form-group">
+          <label>名前</label>
+          <input type="text" id="new-name" class="input" placeholder="山田 太郎">
+        </div>
+        <div class="form-group">
+          <label>時給（円）</label>
+          <input type="number" id="new-wage" class="input" placeholder="1100">
+        </div>
+        <div class="form-group">
+          <label>所属店舗</label>
+          <select id="new-store">
+            <option value="木屋町御池個室店">木屋町御池個室店</option>
+            <option value="烏丸三条個室店">烏丸三条個室店</option>
+          </select>
+        </div>
+        <button class="btn btn-green" style="margin-top:1rem" onclick="addStaff()">＋ スタッフを追加</button>
+      </div>
+
+      <div class="card">
+        <div class="card-title">マスターデータ保守</div>
+        <div style="display:flex;flex-direction:column;gap:10px">
+          <button class="btn btn-ghost" onclick="exportJSON()">💾 バックアップ用JSONを出力</button>
+          <button class="btn btn-ghost" style="color:var(--red)" onclick="clearAll()">⚠️ スプレッドシート全消去リセット</button>
+        </div>
+        <div style="margin-top:1.5rem" id="settings-staff-list"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="role-badge" onclick="triggerRoleModal()" id="role-indicator">🔑 スタッフモード</div>
+
+<div class="modal" id="modal-login">
+  <div class="modal-content">
+    <div class="card-title" style="margin-bottom:1rem">管理者ログイン</div>
+    <div class="form-group">
+      <label>パスワードキーを入力してください</label>
+      <input type="password" id="admin-pass" class="input" placeholder="••••••••">
+    </div>
+    <div class="btn-grid" style="margin-top:1.5rem">
+      <button class="btn btn-ghost" onclick="closeModal('modal-login')">閉じる</button>
+      <button class="btn btn-green" onclick="verifyAdmin()">ログイン</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal" id="modal-edit">
+  <div class="modal-content">
+    <div class="card-title" style="margin-bottom:1rem">スタッフ情報の編集</div>
+    <input type="hidden" id="edit-id">
+    <div class="form-group">
+      <label>名前</label>
+      <input type="text" id="edit-name" class="input">
+    </div>
+    <div class="form-group">
+      <label>時給</label>
+      <input type="number" id="edit-wage" class="input">
+    </div>
+    <div class="form-group">
+      <label>所属店舗</label>
+      <select id="edit-store">
+        <option value="木屋町御池個室店">木屋町御池個室店</option>
+        <option value="烏丸三条個室店">烏丸三条個室店</option>
+      </select>
+    </div>
+    <div class="btn-grid" style="margin-top:1.5rem">
+      <button class="btn btn-ghost" onclick="closeModal('modal-edit')">キャンセル</button>
+      <button class="btn btn-amber" onclick="saveStaffEdit()">変更を保存</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// 設定: あなたのGASウェブアプリのURL
+const GAS_URL = "https://script.google.com/macros/s/AKfycbzzfhCVmcTWgN73wcALYro8c3f5dEq3BQWT15iwX1-CgFq2GUks06VIi80WpBhxFoV2_A/exec";
+const PASSKEY = "8888"; // 管理者用パスワード
+
+let staffList = [];
+let records = [];
+let me = { role: 'staff', staffId: null };
+
+// アプリ起動時にクラウド（スプレッドシート）からデータを読み込む
+window.addEventListener('DOMContentLoaded', async () => {
+  setupMonthFilter();
+  await loadCloudData();
+  filterStaffByStore();
+  renderAll();
+});
+
+// クラウドから最新データをロード
+async function loadCloudData() {
+  document.getElementById('loading').style.display = 'flex';
+  try {
+    const res = await fetch(`${GAS_URL}?action=getData`);
+    if (!res.ok) throw new Error('データ取得に失敗しました');
+    const data = await res.json();
+    staffList = data.staffList || [];
+    records = data.records || [];
+  } catch (e) {
+    alert('クラウドとの通信に失敗しました。最新のデータを読み込めませんでした。\n' + e.message);
+  } finally {
+    document.getElementById('loading').style.display = 'none';
+  }
+}
+
+// クラウド（スプレッドシート）へ現在の状態を同期保存
+async function syncToCloud() {
+  document.getElementById('loading').style.display = 'flex';
+  try {
+    const res = await fetch(GAS_URL, {
+      method: 'POST',
+      body: JSON.stringify({
+        action: 'syncData',
+        staffList: staffList,
+        records: records
+      })
+    });
+    const result = await res.json();
+    if (result.status !== 'success') {
+      throw new Error(result.message || '同期エラー');
+    }
+  } catch (e) {
+    alert('クラウドへのデータ保存に失敗しました。シートに書き込まれていない可能性があります。\n' + e.message);
+  } finally {
+    document.getElementById('loading').style.display = 'none';
+  }
+}
+
+function setupMonthFilter(){
+  const el = document.getElementById('filter-month');
+  el.innerHTML = '';
+  const now = new Date();
+  for(let i=0; i<6; i++){
+    const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+    const mStr = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;
+    const mText = `${d.getFullYear()}年${d.getMonth()+1}月`;
+    el.innerHTML += `<option value="${mStr}">${mText}</option>`;
+  }
+}
+
+function filterStaffByStore(){
+  const store = document.getElementById('ci-store').value;
+  const filtered = staffList.filter(s => s.store === store);
+  const el = document.getElementById('ci-staff');
+  el.innerHTML = filtered.length 
+    ? filtered.map(s => `<option value="${s.id}">${s.name}</option>`).join('')
+    : '<option value="">（スタッフがいません）</option>';
+}
+
+function switchTab(tabId){
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+  event.target.classList.add('active');
+  document.getElementById('tab-' + tabId).classList.add('active');
+  
+  // スマホのレイアウト調整（履歴表示幅）
+  const hWrapper = document.getElementById('history-card-wrapper');
+  if(tabId === 'dashboard' && me.role !== 'admin') {
+    hWrapper.style.gridColumn = "1 / -1";
+  } else {
+    hWrapper.style.gridColumn = "auto";
+  }
+}
+
+function triggerRoleModal(){
+  if(me.role === 'admin'){
+    me.role = 'staff';
+    document.body.classList.remove('is-admin');
+    document.getElementById('role-indicator').innerHTML = '🔑 スタッフモード';
+    switchTab('timecard');
+    document.querySelectorAll('.tab-btn')[0].classList.add('active');
+    renderAll();
+    alert('ログアウトしました');
+  } else {
+    document.getElementById('modal-login').style.display = 'flex';
+    document.getElementById('admin-pass').value = '';
+    document.getElementById('admin-pass').focus();
+  }
+}
+
+function verifyAdmin(){
+  const pass = document.getElementById('admin-pass').value;
+  if(pass === PASSKEY){
+    me.role = 'admin';
+    document.body.classList.add('is-admin');
+    document.getElementById('role-indicator').innerHTML = '👑 管理者モード';
+    closeModal('modal-login');
+    renderAll();
+    alert('管理者認証に成功しました');
+  } else {
+    alert('パスワードキーが正しくありません');
+  }
+}
+
+function closeModal(id){
+  document.getElementById(id).style.display = 'none';
+}
+
+// ⏰ 打刻処理
+async function registerRecord(type){
+  const staffId = document.getElementById('ci-staff').value;
+  if(!staffId){ alert('スタッフを選択してください'); return; }
+  const staff = staffList.find(s => s.id == staffId);
+  const note = document.getElementById('ci-note').value.trim();
+  
+  const now = new Date();
+  const dateStr = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
+  const timeStr = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+  
+  const newRecord = {
+    id: Date.now(),
+    staffId: staff.id,
+    staffName: staff.name,
+    store: staff.store,
+    type: type,
+    timestamp: now.toISOString(),
+    dateStr: dateStr,
+    timeStr: timeStr,
+    note: note || 'なし'
+  };
+  
+  records.push(newRecord);
+  document.getElementById('ci-note').value = '';
+  
+  // クラウド同期
+  await syncToCloud();
+  renderAll();
+  alert(`${staff.name}さん：${type}を記録しました（${timeStr}）`);
+}
+
+// 👑 管理者用: スタッフ追加
+async function addStaff(){
+  const name = document.getElementById('new-name').value.trim();
+  const wage = parseInt(document.getElementById('new-wage').value);
+  const store = document.getElementById('new-store').value;
+  if(!name || !wage){ alert('名前と時給を正しく入力してください'); return; }
+  
+  staffList.push({ id: Date.now(), name, wage, store });
+  document.getElementById('new-name').value = '';
+  document.getElementById('new-wage').value = '';
+  
+  await syncToCloud();
+  filterStaffByStore();
+  renderAll();
+  alert('新しいスタッフを登録しました');
+}
+
+// 👑 管理者用: スタッフ削除
+async function removeStaff(id){
+  if(!confirm('このスタッフ情報を完全に削除しますか？（過去の出退勤明細は残ります）')) return;
+  staffList = staffList.filter(s => s.id != id);
+  await syncToCloud();
+  filterStaffByStore();
+  renderAll();
+}
+
+function openModal(id){
+  const s = staffList.find(item => item.id == id);
+  if(!s) return;
+  document.getElementById('edit-id').value = s.id;
+  document.getElementById('edit-name').value = s.name;
+  document.getElementById('edit-wage').value = s.wage;
+  document.getElementById('edit-store').value = s.store;
+  document.getElementById('modal-edit').style.display = 'flex';
+}
+
+// 👑 管理者用: スタッフ編集保存
+async function saveStaffEdit(){
+  const id = document.getElementById('edit-id').value;
+  const name = document.getElementById('edit-name').value.trim();
+  const wage = parseInt(document.getElementById('edit-wage').value);
+  const store = document.getElementById('edit-store').value;
+  if(!name || !wage){ alert('入力値が不正です'); return; }
+  
+  const s = staffList.find(item => item.id == id);
+  if(s){ s.name = name; s.wage = wage; s.store = store; }
+  closeModal('modal-edit');
+  
+  await syncToCloud();
+  filterStaffByStore();
+  renderAll();
+  alert('スタッフ情報を更新しました');
+}
+
+// 👑 管理者用: バックアップ出力
+function exportJSON(){
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([JSON.stringify({staffList,records,exportedAt:new Date().toISOString()},null,2)],{type:'application/json'}));
+  a.download = `attendance_backup_${new Date().toISOString().slice(0,10)}.json`;
+  a.click();
+}
+
+// 👑 管理者用: オールクリア
+async function clearAll(){
+  if(!confirm('Googleスプレッドシート上のすべてのデータを削除しますか？\nこの操作は絶対に戻せません。')) return;
+  staffList = [];
+  records = [];
+  await syncToCloud();
+  filterStaffByStore();
+  renderAll();
+  alert('クラウドデータを完全にクリアしました');
+}
+
+function renderAll(){
+  renderTodayLogs();
+  renderFilters();
+  renderDashboard();
+  renderSettingsStaff();
+}
+
+function renderTodayLogs(){
+  const container = document.getElementById('today-logs');
+  const now = new Date();
+  const todayStr = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
+  
+  const todayRecords = records.filter(r => r.dateStr === todayStr).sort((a,b)=>new Date(b.timestamp)-new Date(a.timestamp));
+  if(!todayRecords.length){ container.innerHTML='<div style="font-size:13px;color:var(--ink3)">本日の打刻はありません</div>'; return;}
+  
+  container.innerHTML = todayRecords.map(r => `
+    <div class="record-item">
+      <div>
+        <div style="font-size:13px;font-weight:700">${r.staffName}</div>
+        <div style="font-size:11px;color:var(--ink3);margin-top:2px">${r.store.slice(0,3)} • 備考: ${r.note}</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px">
+        <span class="${r.type==='出勤'?'badge-in':'badge-out'}">${r.type}</span>
+        <span class="time-mono">${r.timeStr}</span>
+      </div>
+    </div>`).join('');
+}
+
+function renderFilters(){
+  const fStaff = document.getElementById('filter-staff');
+  const current = fStaff.value;
+  fStaff.innerHTML = '<option value="ALL">全てのスタッフを表示</option>' + 
+    staffList.map(s => `<option value="${s.id}">${s.name}</option>`).join('');
+  if([...fStaff.options].some(o => o.value === current)) fStaff.value = current;
+}
+
+function renderDashboard(){
+  const targetMonth = document.getElementById('filter-month').value; // YYYY-MM
+  const targetStore = document.getElementById('filter-store').value;
+  const targetStaffId = document.getElementById('filter-staff').value;
+  
+  // 指定された月・店舗・スタッフのレコードを抽出
+  let filtered = records.filter(r => r.dateStr.startsWith(targetMonth));
+  if(targetStore !== 'ALL') filtered = filtered.filter(r => r.store === targetStore);
+  if(me.role === 'admin' && targetStaffId !== 'ALL') filtered = filtered.filter(r => r.staffId == targetStaffId);
+  
+  // 給与・時間の集計ロジック（日またぎ非対応の簡易ペア計算）
+  const summaryMap = {};
+  staffList.forEach(s => { summaryMap[s.id] = { name:s.name, store:s.store, wage:s.wage, totalHours:0, totalPay:0, logs:[] }; });
+  
+  // スタッフ毎に日付で仕分けて出退勤ペアを計算
+  const recordsByStaff = {};
+  filtered.forEach(r => {
+    if(!recordsByStaff[r.staffId]) recordsByStaff[r.staffId] = [];
+    recordsByStaff[r.staffId].push(r);
+  });
+  
+  let overallTotalPay = 0;
+  const historyLines = [];
+  
+  Object.keys(recordsByStaff).forEach(sId => {
+    const sLogs = recordsByStaff[sId].sort((a,b) => new Date(a.timestamp) - new Date(b.timestamp));
+    const staffWage = summaryMap[sId] ? summaryMap[sId].wage : 1100;
+    const staffName = summaryMap[sId] ? summaryMap[sId].name : (sLogs[0]?.staffName || '不明');
+    const staffStore = summaryMap[sId] ? summaryMap[sId].store : (sLogs[0]?.store || '');
+    
+    let lastIn = null;
+    
+    sLogs.forEach(r => {
+      if(r.type === '出勤'){
+        lastIn = r;
+      } else if(r.type === '退勤' && lastIn) {
+        const durationMs = new Date(r.timestamp) - new Date(lastIn.timestamp);
+        const hours = Math.max(0, durationMs / (1000 * 60 * 60)); // 時間換算
+        const pay = Math.round(hours * staffWage);
+        
+        if(summaryMap[sId]){
+          summaryMap[sId].totalHours += hours;
+          summaryMap[sId].totalPay += pay;
+        }
+        overallTotalPay += pay;
+        
+        historyLines.push({
+          date: lastIn.dateStr,
+          name: staffName,
+          store: staffStore,
+          inTime: lastIn.timeStr,
+          outTime: r.timeStr,
+          hours: hours.toFixed(2),
+          pay: pay,
+          note: r.note !== 'なし' ? r.note : (lastIn.note !== 'なし' ? lastIn.note : '')
+        });
+        lastIn = null;
+      }
+    });
+  });
+  
+  // 1. 総支給額の更新（管理者にのみ表示）
+  document.getElementById('total-pay-display').textContent = `¥${overallTotalPay.toLocaleString()}`;
+  
+  // 2. 人件費集計リストの表示
+  const sListEl = document.getElementById('salary-summary-list');
+  const activeSummary = Object.values(summaryMap).filter(s => s.totalHours > 0);
+  if(!activeSummary.length){
+    sListEl.innerHTML = '<div style="font-size:13px;color:var(--ink3)">期間内の勤務データがありません</div>';
+  } else {
+    sListEl.innerHTML = activeSummary.map(s => `
+      <div class="record-item">
+        <div>
+          <div style="font-size:13px;font-weight:700">${s.name}</div>
+          <div style="font-size:11px;color:var(--ink3);margin-top:2px">${s.store.slice(0,3)} • ¥${s.wage}/h</div>
+        </div>
+        <div style="text-align:right">
+          <div style="font-size:13px;font-weight:700;color:var(--green)">¥${s.totalPay.toLocaleString()}</div>
+          <div class="time-mono" style="font-size:11px;color:var(--ink3)">${s.totalHours.toFixed(2)}h</div>
+        </div>
+      </div>`).join('');
+  }
+  
+  // 3. 出退勤明細履歴の表示
+  const hListEl = document.getElementById('history-log-list');
+  const sortedHistory = historyLines.sort((a,b) => new Date(b.date) - new Date(a.date));
+  if(!sortedHistory.length){
+    hListEl.innerHTML = '<div style="font-size:13px;color:var(--ink3)">該当する明細履歴がありません</div>';
+  } else {
+    hListEl.innerHTML = sortedHistory.map(h => `
+      <div class="record-item" style="flex-direction:column;align-items:flex-start;gap:4px">
+        <div style="display:flex;justify-content:between;width:100%;font-size:12px;color:var(--ink3);font-weight:700">
+          <span>${h.date} (${h.store.slice(0,3)})</span>
+          <span class="admin-only" style="color:var(--green)">¥${h.pay.toLocaleString()}</span>
+        </div>
+        <div style="display:flex;justify-content:between;width:100%;align-items:center">
+          <span style="font-size:14px;font-weight:700">${h.name}</span>
+          <span class="time-mono" style="font-size:13px">${h.inTime} 〜 ${h.outTime} <span style="font-size:11px;color:var(--ink3)">(${h.hours}h)</span></span>
+        </div>
+        ${h.note ? `<div style="font-size:11px;color:var(--amber);background:var(--amber-pale);padding:2px 6px;border-radius:4px;width:100%">💡 備考: ${h.note}</div>` : ''}
+      </div>`).join('');
+  }
+}
+
+function renderSettingsStaff(){
+  const container = document.getElementById('settings-staff-list');
+  if(!staffList.length){ container.innerHTML='<div style="font-size:13px;color:var(--ink3)">登録スタッフはいません</div>'; return; }
+  
+  container.innerHTML = `
+    <div style="font-size:12px;font-weight:700;color:var(--ink3);margin-bottom:8px">登録中のスタッフ一覧 (${staffList.length}名)</div>
+    <div style="display:flex;flex-direction:column;gap:8px">
+      ${staffList.map(s => `
+      <div class="record-item" style="background:var(--paper);padding:10px;border-radius:8px">
+        <div>
+          <div style="font-size:13px;font-weight:700">${s.name}</div>
+          <div style="font-size:11px;color:var(--ink3);margin-top:2px">
+            <span class="store-tag ${s.store==='木屋町御池個室店'?'store-k':'store-r'}">${s.store==='木屋町御池個室店'?'木屋町':'烏丸'}</span>
+            ¥${s.wage.toLocaleString()}/h
+          </div>
+        </div>
+        <div style="display:flex;gap:6px">
+          <button class="btn btn-amber" style="padding:4px 10px;font-size:11px" onclick="openModal(${s.id})">✏️ 編集</button>
+          <button class="btn btn-ghost" style="padding:4px 10px;font-size:11px" onclick="removeStaff(${s.id})">削除</button>
+        </div>
+      </div>`).join('')}
+    </div>`;
+}
+</script>
+</body>
+</html>
